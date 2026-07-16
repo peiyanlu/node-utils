@@ -1,0 +1,62 @@
+{
+  "name": "@peiyanlu/node-utils",
+  "version": "0.0.0",
+  "description": "Lightweight utilities for Node.js development.",
+  "license": "MIT",
+  "type": "module",
+  "private": false,
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "dev": "tsdown -w",
+    "build": "tsdown",
+    "prepublishOnly": "tsdown",
+    "release": "release",
+    "test": "vitest run",
+    "test:cov": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@peiyanlu/release": "^1.1.2",
+    "@peiyanlu/test-tools": "^0.0.2",
+    "@types/node": "^24.13.2",
+    "@vitest/coverage-v8": "^4.1.9",
+    "publint": "^0.3.21",
+    "tsdown": "^0.22.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  },
+  "author": {
+    "name": "YanluPei",
+    "email": "peiyanlu@vip.qq.com"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "typescript",
+    "lib"
+  ],
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peiyanlu/node-utils.git"
+  },
+  "bugs": {
+    "url": "https://github.com/peiyanlu/node-utils/issues"
+  },
+  "homepage": "https://github.com/peiyanlu/node-utils#readme",
+  "packageManager": "pnpm@11.10.0"
+}
