@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, statSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
 
 
@@ -52,4 +52,9 @@ export const readJsonFileSync = <T extends Record<string, unknown>>(file: string
     console.error(e)
     return {} as T
   }
+}
+
+/** 是否是文件 */
+export const isFileSync = (path: string): boolean => {
+  return existsSync(path) && statSync(path).isFile()
 }

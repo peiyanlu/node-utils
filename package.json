@@ -24,13 +24,13 @@
   },
   "devDependencies": {
     "@peiyanlu/release": "^1.1.2",
-    "@peiyanlu/test-tools": "^0.0.2",
-    "@types/node": "^24.13.2",
-    "@vitest/coverage-v8": "^4.1.9",
+    "@peiyanlu/test-tools": "^0.0.3",
+    "@types/node": "^24.13.3",
+    "@vitest/coverage-v8": "^4.1.10",
     "publint": "^0.3.21",
-    "tsdown": "^0.22.3",
+    "tsdown": "^0.22.9",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   },
   "author": {
     "name": "YanluPei",
@@ -41,7 +41,8 @@
   },
   "keywords": [
     "typescript",
-    "lib"
+    "lib",
+    "node"
   ],
   "files": [
     "dist"
@@ -57,6 +58,5 @@
   "bugs": {
     "url": "https://github.com/peiyanlu/node-utils/issues"
   },
-  "homepage": "https://github.com/peiyanlu/node-utils#readme",
-  "packageManager": "pnpm@11.10.0"
+  "homepage": "https://github.com/peiyanlu/node-utils#readme"
 }

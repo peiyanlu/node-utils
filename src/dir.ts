@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import { existsSync, statSync } from 'node:fs'
 import { copyFile, mkdir, readdir, rm } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 
@@ -64,4 +64,9 @@ export const copyDir = async (
       await copyFile(from, to)
     }
   }
+}
+
+/** 是否是目录 */
+export const isDirSync = (path: string): boolean => {
+  return existsSync(path) && statSync(path).isDirectory()
 }

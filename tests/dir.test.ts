@@ -2,7 +2,7 @@ import { createTempDir, SetupManager, Tool } from '@peiyanlu/test-tools'
 import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import { afterAll, expect, it } from 'vitest'
-import { copyDir, emptyDir, isDirEmpty, listSubDirs } from '../src/index.js'
+import { copyDir, emptyDir, isDirEmpty, isDirSync, listSubDirs } from '../src/index.js'
 
 
 const TEMP_DIR = createTempDir()
@@ -135,4 +135,12 @@ it('copyDir copies nested directories and can ignore directories', async () => {
   
   expect(tool.readFileSync(join(dest, 'sub', 'a.txt'), 'utf-8')).toBe('a')
   expect(tool.existsSync(join(dest, 'ignored'))).toBe(false)
+})
+
+it('isDirSync determine whether the path is dir', async () => {
+  await manager.prepare(3)
+  
+  expect(isDirSync(tool.resolve('packages'))).toBe(true)
+  expect(isDirSync(tool.resolve('no-exist-packages'))).toBe(false)
+  expect(isDirSync(tool.resolve('a.txt'))).toBe(false)
 })
