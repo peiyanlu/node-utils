@@ -1,9 +1,9 @@
-import { createTempDir, SetupManager, Tool } from '@peiyanlu/test-tools'
+import { createTempWorkspace, SetupManager, Tool } from '@peiyanlu/test-tools'
 import { afterAll, expect, it } from 'vitest'
 import { gzipFile } from '../src/index.js'
 
 
-const TEMP_DIR = createTempDir()
+const { path: TEMP_DIR } = createTempWorkspace()
 let tool: Tool
 const manager = new SetupManager()
 

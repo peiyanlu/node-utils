@@ -1,11 +1,19 @@
-import { createTempDir, SetupManager, Tool } from '@peiyanlu/test-tools'
+import { createTempWorkspace, SetupManager, Tool } from '@peiyanlu/test-tools'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
-import { afterAll, afterEach, beforeEach, expect, it, vi } from 'vitest'
-import { editFile, editJsonFile, isFileSync, readJsonFile, readJsonFileSync } from '../src/index.js'
+import { afterAll, expect, it } from 'vitest'
+import {
+  editFile,
+  editJsonFile,
+  isFileSync,
+  readJsonFile,
+  readJsonFileSync,
+  writeJsonFile,
+  writeJsonFileSync,
+} from '../src/index.js'
 
 
-const TEMP_DIR = createTempDir()
+const { path: TEMP_DIR } = createTempWorkspace()
 let tool: Tool
 const manager = new SetupManager()
 
@@ -31,9 +39,6 @@ manager.setTeardown(() => {
 afterAll(() => {
   tool?.cleanup()
 })
-
-
-const error = vi.spyOn(console, 'error').mockImplementation(() => {})
 
 
 it('editFile skips missing file', async () => {
@@ -70,10 +75,11 @@ it('editJsonFile keeps invalid json unchanged', async () => {
   await manager.prepare(2)
   
   const file = join(TEMP_DIR, 'b.json')
-  await editJsonFile(file, json => {})
+  await editJsonFile(file, json => {
+    json.version = '2.0.0'
+  })
   
   expect(tool.readFileSync(file, 'utf-8')).toBe('{ invalid json }\n')
-  expect(error).toHaveBeenCalled()
 })
 
 it('readJsonFile reads and parses json file', async () => {
@@ -88,7 +94,6 @@ it('readJsonFile return {} if json is invalid', async () => {
   
   const file = join(TEMP_DIR, 'b.json')
   expect(await readJsonFile(file)).toEqual({})
-  expect(error).toHaveBeenCalled()
 })
 
 it('readJsonFile return {} if file does not exist', async () => {
@@ -110,7 +115,6 @@ it('readJsonFileSync return {} if json is invalid', async () => {
   
   const file = join(TEMP_DIR, 'b.json')
   expect(readJsonFileSync(file)).toEqual({})
-  expect(error).toHaveBeenCalled()
 })
 
 it('readJsonFileSync return {} if file does not exist', async () => {
@@ -118,6 +122,26 @@ it('readJsonFileSync return {} if file does not exist', async () => {
   
   const file = join(TEMP_DIR, '404.json')
   expect(readJsonFileSync(file)).toEqual({})
+})
+
+it('writeJsonFile write json file', async () => {
+  await manager.prepare(1)
+  
+  const file = join(TEMP_DIR, '404.json')
+  await writeJsonFile(file, { version: '1.0.1' })
+  
+  const res = tool.readFileSync(file, 'utf-8')
+  expect(JSON.parse(res)).toMatchObject({ version: '1.0.1' })
+})
+
+it('writeJsonFileSync write json file synchronously', async () => {
+  await manager.prepare(1)
+  
+  const file = join(TEMP_DIR, '404.json')
+  writeJsonFileSync(file, { version: '1.0.1' })
+  
+  const res = tool.readFileSync(file, 'utf-8')
+  expect(JSON.parse(res)).toMatchObject({ version: '1.0.1' })
 })
 
 it('isFileSync determine whether the path is dir', async () => {

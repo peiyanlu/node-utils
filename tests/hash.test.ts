@@ -1,10 +1,10 @@
-import { createTempDir, SetupManager, Tool } from '@peiyanlu/test-tools'
+import { createTempWorkspace, SetupManager, Tool } from '@peiyanlu/test-tools'
 import { type BinaryLike, createHash } from 'node:crypto'
 import { afterAll, describe, expect, it } from 'vitest'
 import { hash, hashFile } from '../src/index.js'
 
 
-const TEMP_DIR = createTempDir()
+const { path: TEMP_DIR } = createTempWorkspace()
 let tool: Tool
 const manager = new SetupManager()
 

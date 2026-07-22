@@ -1,11 +1,11 @@
-import { createTempDir, SetupManager, Tool } from '@peiyanlu/test-tools'
+import { createTempWorkspace, SetupManager, Tool } from '@peiyanlu/test-tools'
 import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import { afterAll, expect, it } from 'vitest'
-import { copyDir, emptyDir, isDirEmpty, isDirSync, listSubDirs } from '../src/index.js'
+import { copyDir, createMatcher, createTempDir, emptyDir, isDirEmpty, isDirSync, listSubDirs } from '../src/index.js'
 
 
-const TEMP_DIR = createTempDir()
+const { path: TEMP_DIR } = createTempWorkspace()
 let tool: Tool
 const manager = new SetupManager()
 
@@ -143,4 +143,41 @@ it('isDirSync determine whether the path is dir', async () => {
   expect(isDirSync(tool.resolve('packages'))).toBe(true)
   expect(isDirSync(tool.resolve('no-exist-packages'))).toBe(false)
   expect(isDirSync(tool.resolve('a.txt'))).toBe(false)
+})
+
+it('createTempDir should create temp dir', async () => {
+  await manager.prepare(1)
+  
+  const { path, name, remove } = await createTempDir(tool.cwd)
+  
+  expect(name).toMatch(/tmp-/)
+  expect(path.endsWith(name)).toBe(true)
+  expect(tool.existsSync(path)).toBe(true)
+  
+  await remove()
+  
+  expect(tool.existsSync(path)).toBe(false)
+})
+
+it('createMatcher should support literal string', () => {
+  const matcher = createMatcher('literal-string')
+  
+  expect(matcher('literal string')).toBe(false)
+  expect(matcher('literal-string')).toBe(true)
+})
+
+it('createMatcher should support regexp', () => {
+  const matcher = createMatcher(/README\.[\w-]+\.md/)
+  
+  expect(matcher('README.md')).toBe(false)
+  expect(matcher('README.en.md')).toBe(true)
+  expect(matcher('README.zh.md')).toBe(true)
+})
+
+it('createMatcher should support glob', () => {
+  const matcher = createMatcher('*.config.{ts,cts,mts}')
+  
+  expect(matcher('tsdown.config.mts')).toBe(true)
+  expect(matcher('vitest.config.mts')).toBe(true)
+  expect(matcher('vitestconfig.mts')).toBe(false)
 })

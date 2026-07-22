@@ -7,13 +7,23 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@peiyanlu/ts-utils':
+        specifier: ^0.0.11
+        version: 0.0.11
+      minimatch:
+        specifier: ^10.2.5
+        version: 10.2.5
+      tinyglobby:
+        specifier: ^0.2.17
+        version: 0.2.17
     devDependencies:
       '@peiyanlu/release':
         specifier: ^1.1.2
         version: 1.1.2(conventional-commits-filter@6.0.1)
       '@peiyanlu/test-tools':
-        specifier: ^0.0.3
-        version: 0.0.3
+        specifier: ^0.0.4
+        version: 0.0.4
       '@types/node':
         specifier: ^24.13.3
         version: 24.13.3
@@ -196,9 +206,13 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
-  '@peiyanlu/test-tools@0.0.3':
-    resolution: {integrity: sha512-wclrZQdVWljylM7T6xeGc8osf/5cpYr8STCMvyIV84Wd65dW7npaNQkANNOGcmXW9dlkepCJb78y+gWXOKeaCQ==}
+  '@peiyanlu/test-tools@0.0.4':
+    resolution: {integrity: sha512-1Wp37dv4BrmGcRtJ4v9pMSujthQSYdA8XATRnqv6C/VXJineVBzTgnL1RqEgNVcUkluC2xFmhcY4JSqsDKYaUg==}
     engines: {node: '>=22'}
+
+  '@peiyanlu/ts-utils@0.0.11':
+    resolution: {integrity: sha512-0x9PC1A6ogLkPuycq9nHC2YkfKwgGLIzPIXNF7J4r67CXHS/Xj8x87X1I+i4YZhKWgdRqA+ucZwSAT4AtwZBYA==}
+    engines: {node: '>=20.0.0'}
 
   '@peiyanlu/ts-utils@0.0.8':
     resolution: {integrity: sha512-Pk19z1Ihcvvu5VP8dAK+QgrZGnFdxVP8To27asAHq54OijzhdouEUHufxuCy9aCAMdfdZlTvqqY8ovWsIyP6Hg==}
@@ -626,8 +640,16 @@ packages:
   ast-v8-to-istanbul@1.0.5:
     resolution: {integrity: sha512-UPAgKJFSEGMWSDr3LX4tqnAb4f7KGT8O40Tyx8wbYmmZ/yn58lNCm8h3svs3eXgiGd5AXxz8NDOvXWvicq+rJA==}
 
+  balanced-match@4.0.4:
+    resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
+    engines: {node: 18 || 20 || >=22}
+
   before-after-hook@4.0.0:
     resolution: {integrity: sha512-q6tR3RPqIB1pMiTRMFcZwuG5T8vwp+vUvEG0vuI6B+Rikh5BfPp2fQ82c925FOs+b0lcFQ8CFrL+KbilfZFhOQ==}
+
+  brace-expansion@5.0.7:
+    resolution: {integrity: sha512-7oFy703dxfY3/NLxC1fh2SUCQ0H9rmAY+5EpDVfXjUTTs+HEwR2nYaqLv+GWcTsumwxPfiz6CzCNkwXwBUwqCA==}
+    engines: {node: 18 || 20 || >=22}
 
   bundle-name@4.1.0:
     resolution: {integrity: sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q==}
@@ -897,6 +919,10 @@ packages:
   mime-types@3.0.2:
     resolution: {integrity: sha512-Lbgzdk0h4juoQ9fCKXW4by0UJqj+nOOrI9MJ1sSj4nI8aI2eo1qmvQEie4VD1glsS250n15LsWsYtCugiStS5A==}
     engines: {node: '>=18'}
+
+  minimatch@10.2.5:
+    resolution: {integrity: sha512-MULkVLfKGYDFYejP07QOurDLLQpcjk7Fw+7jXS2R2czRQzR56yHRveU5NDJEOviH+hETZKSkIk5c+T23GjFUMg==}
+    engines: {node: 18 || 20 || >=22}
 
   mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
@@ -1412,7 +1438,9 @@ snapshots:
     transitivePeerDependencies:
       - conventional-commits-filter
 
-  '@peiyanlu/test-tools@0.0.3': {}
+  '@peiyanlu/test-tools@0.0.4': {}
+
+  '@peiyanlu/ts-utils@0.0.11': {}
 
   '@peiyanlu/ts-utils@0.0.8': {}
 
@@ -1698,7 +1726,13 @@ snapshots:
       estree-walker: 3.0.3
       js-tokens: 10.0.0
 
+  balanced-match@4.0.4: {}
+
   before-after-hook@4.0.0: {}
+
+  brace-expansion@5.0.7:
+    dependencies:
+      balanced-match: 4.0.4
 
   bundle-name@4.1.0:
     dependencies:
@@ -1911,6 +1945,10 @@ snapshots:
   mime-types@3.0.2:
     dependencies:
       mime-db: 1.54.0
+
+  minimatch@10.2.5:
+    dependencies:
+      brace-expansion: 5.0.7
 
   mri@1.2.0: {}
 

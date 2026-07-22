@@ -1,12 +1,21 @@
+import { minimatch } from 'minimatch'
 import { existsSync, statSync } from 'node:fs'
-import { copyFile, mkdir, readdir, rm } from 'node:fs/promises'
-import { join, resolve } from 'node:path'
+import { copyFile, mkdir, mkdtemp, readdir, rm } from 'node:fs/promises'
+import { basename, join, resolve } from 'node:path'
+import { isDynamicPattern } from 'tinyglobby'
 
 
 export interface CopyDirOptions {
   rename?: Record<string, string>;
   ignore?: ((name: string, isDir: boolean, parent: string) => boolean)[];
 }
+
+export interface TempDir {
+  path: string;
+  name: string;
+  remove: () => Promise<void>;
+}
+
 
 /** 目录置空，支持忽略 */
 export const emptyDir = async (dir: string, ignore: string[] = []): Promise<boolean> => {
@@ -69,4 +78,31 @@ export const copyDir = async (
 /** 是否是目录 */
 export const isDirSync = (path: string): boolean => {
   return existsSync(path) && statSync(path).isDirectory()
+}
+
+/** 在指定目录下创建临时目录 */
+export const createTempDir = async (parent: string): Promise<TempDir> => {
+  await mkdir(parent, { recursive: true })
+  
+  const path = await mkdtemp(join(parent, 'tmp-'))
+  const name = basename(path)
+  const remove = () => rm(path, { recursive: true })
+  
+  return { path, name, remove }
+}
+
+/** 创建字符串匹配函数，支持正则、Glob 模式和精确匹配 */
+export const createMatcher = (pattern: string | RegExp): (name: string) => boolean => {
+  if (pattern instanceof RegExp) {
+    return (name: string) => {
+      pattern.lastIndex = 0
+      return pattern.test(name)
+    }
+  }
+  
+  if (isDynamicPattern(pattern)) {
+    return (name: string) => minimatch(name, pattern)
+  }
+  
+  return (name: string) => name === pattern
 }
