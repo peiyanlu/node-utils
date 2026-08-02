@@ -1,16 +1,26 @@
 import { createTempWorkspace, SetupManager, Tool } from '@peiyanlu/test-tools'
+import { spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
-import { join } from 'node:path'
-import { afterAll, expect, it } from 'vitest'
+import { join, resolve } from 'node:path'
+import { afterAll, describe, expect, it, vi } from 'vitest'
 import {
   editFile,
   editJsonFile,
   isFileSync,
   readJsonFile,
   readJsonFileSync,
+  revealFile,
+  scanFiles,
   writeJsonFile,
   writeJsonFileSync,
-} from '../src/index.js'
+} from '../src/file.js'
+
+
+vi.mock('node:child_process', () => ({
+  spawn: vi.fn(() => ({
+    unref: vi.fn(),
+  })),
+}))
 
 
 const { path: TEMP_DIR } = createTempWorkspace()
@@ -150,4 +160,73 @@ it('isFileSync determine whether the path is dir', async () => {
   expect(isFileSync(tool.resolve('a.txt'))).toBe(true)
   expect(isFileSync(tool.resolve('packages'))).toBe(false)
   expect(isFileSync(tool.resolve('no-exist-file.txt'))).toBe(false)
+})
+
+it('revealFile should reveal files', () => {
+  const platformTest = vi.spyOn(process, 'platform', 'get')
+  platformTest.mockReturnValue('win32')
+  
+  revealFile('c:/tmp/test/test.txt')
+  
+  expect(spawn).toHaveBeenCalled()
+  
+  platformTest.mockReturnValue('darwin')
+  
+  revealFile('/tmp/test/test.txt')
+  
+  expect(spawn).toHaveBeenCalled()
+  
+  platformTest.mockReturnValue('linux')
+  
+  revealFile('/tmp/test/test.txt')
+  
+  expect(spawn).toHaveBeenCalled()
+  
+  platformTest.mockReturnValue('android')
+  
+  expect(() => revealFile('/tmp/test/test.txt')).toThrow()
+})
+
+describe('scanFiles', () => {
+  it('should scan matched files', async () => {
+    await manager.prepare(2)
+    
+    const result = scanFiles([ tool.cwd ], [ '**/*.json' ])
+    
+    expect(result).toHaveLength(2)
+    
+    expect(result.map(item => resolve(item.file)))
+      .toEqual([
+        tool.resolve('a.json'),
+        tool.resolve('b.json'),
+      ])
+    
+    expect(result[0].dir).toBe(tool.cwd)
+  })
+  
+  it('should support dot files', async () => {
+    await manager.prepare(2)
+    tool.writeFileSync('.a.json', '{}')
+    
+    const result = scanFiles([ tool.cwd ], [ '**/*.json' ])
+    
+    expect(result).toHaveLength(3)
+    
+    expect(result.map(item => resolve(item.file)))
+      .toEqual([
+        tool.resolve('.a.json'),
+        tool.resolve('a.json'),
+        tool.resolve('b.json'),
+      ])
+    
+    expect(result[0].dir).toBe(tool.cwd)
+  })
+  
+  it('should ignore unmatched files', async () => {
+    await manager.prepare(2)
+    
+    const result = scanFiles([ tool.cwd ], [ '**/*.png' ])
+    
+    expect(result).toEqual([])
+  })
 })

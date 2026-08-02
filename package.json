@@ -7,10 +7,8 @@
   "private": false,
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      }
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
     },
     "./package.json": "./package.json"
   },
@@ -24,16 +22,16 @@
   },
   "dependencies": {
     "@peiyanlu/ts-utils": "^0.0.11",
-    "minimatch": "^10.2.5",
+    "minimatch": "^10.2.6",
     "tinyglobby": "^0.2.17"
   },
   "devDependencies": {
-    "@peiyanlu/release": "^1.1.2",
-    "@peiyanlu/test-tools": "^0.0.4",
+    "@peiyanlu/release": "^1.2.0",
+    "@peiyanlu/test-tools": "^0.0.5",
     "@types/node": "^24.13.3",
     "@vitest/coverage-v8": "^4.1.10",
-    "publint": "^0.3.21",
-    "tsdown": "^0.22.9",
+    "publint": "^0.3.22",
+    "tsdown": "^0.22.14",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"
   },

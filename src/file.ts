@@ -1,6 +1,9 @@
 import { type Dict, tryCall, tryCallSync } from '@peiyanlu/ts-utils'
+import { spawn } from 'node:child_process'
 import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
+import { dirname, resolve } from 'node:path'
+import { globSync } from 'tinyglobby'
 
 
 /** 编辑文件 */
@@ -38,7 +41,7 @@ export const readJsonFile = async <T extends Dict<any>>(file: string): Promise<T
 }
 
 /** {@link readJsonFile} 的同步版本 */
-export const readJsonFileSync = <T extends Record<string, unknown>>(file: string): T => {
+export const readJsonFileSync = <T extends Dict<any>>(file: string): T => {
   if (!existsSync(file)) return {} as T
   return tryCallSync(() => {
     const text = readFileSync(file, 'utf-8')
@@ -61,4 +64,51 @@ export const writeJsonFileSync = <T extends Dict>(file: string, json: T): void =
 /** 是否是文件 */
 export const isFileSync = (path: string): boolean => {
   return existsSync(path) && statSync(path).isFile()
+}
+
+/** 显示文件 */
+export const revealFile = (file: string): void => {
+  let cmd: string
+  let args: string[]
+  
+  switch (process.platform) {
+    case 'win32':
+      cmd = 'explorer.exe'
+      args = [ `/select,${ file }` ]
+      break
+    
+    case 'darwin':
+      cmd = 'open'
+      args = [ '-R', file ]
+      break
+    
+    case 'linux':
+      cmd = 'xdg-open'
+      args = [ dirname(file) ]
+      break
+    
+    default:
+      throw new Error(`Unsupported platform: ${ process.platform }`)
+  }
+  
+  spawn(cmd, args, { detached: true, stdio: 'ignore' }).unref()
+}
+
+/** glob 模式扫描文件 */
+export const scanFiles = (dirs: string[], patterns: string[]): { file: string; dir: string; }[] => {
+  return dirs
+    .map(d => resolve(d))
+    .flatMap(
+      dir => globSync(
+        patterns,
+        {
+          cwd: dir,
+          onlyFiles: true,
+          absolute: true,
+          dot: true,
+        },
+      )
+        .sort()
+        .map(file => ({ file, dir })),
+    )
 }

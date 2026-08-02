@@ -1,7 +1,7 @@
 import { createTempWorkspace, SetupManager, Tool } from '@peiyanlu/test-tools'
 import { type BinaryLike, createHash } from 'node:crypto'
 import { afterAll, describe, expect, it } from 'vitest'
-import { hash, hashFile } from '../src/index.js'
+import { hash, hashFile } from '../src/hash.js'
 
 
 const { path: TEMP_DIR } = createTempWorkspace()

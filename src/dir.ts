@@ -1,4 +1,5 @@
 import { minimatch } from 'minimatch'
+import { spawn } from 'node:child_process'
 import { existsSync, statSync } from 'node:fs'
 import { copyFile, mkdir, mkdtemp, readdir, rm } from 'node:fs/promises'
 import { basename, join, resolve } from 'node:path'
@@ -84,7 +85,7 @@ export const isDirSync = (path: string): boolean => {
 export const createTempDir = async (parent: string): Promise<TempDir> => {
   await mkdir(parent, { recursive: true })
   
-  const path = await mkdtemp(join(parent, 'tmp-'))
+  const path = await mkdtemp(join(parent, 'temp-'))
   const name = basename(path)
   const remove = () => rm(path, { recursive: true })
   
@@ -105,4 +106,32 @@ export const createMatcher = (pattern: string | RegExp): (name: string) => boole
   }
   
   return (name: string) => name === pattern
+}
+
+/** 打开文件夹 */
+export const openDir = (dir: string): void => {
+  let cmd: string
+  let args: string[]
+  
+  switch (process.platform) {
+    case 'win32':
+      cmd = 'cmd'
+      args = [ '/c', 'start', '', dir ]
+      break
+    
+    case 'darwin':
+      cmd = 'open'
+      args = [ dir ]
+      break
+    
+    case 'linux':
+      cmd = 'xdg-open'
+      args = [ dir ]
+      break
+    
+    default:
+      throw new Error(`Unsupported platform: ${ process.platform }`)
+  }
+  
+  spawn(cmd, args, { detached: true, stdio: 'ignore' }).unref()
 }

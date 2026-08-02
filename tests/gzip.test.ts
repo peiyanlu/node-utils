@@ -1,6 +1,6 @@
 import { createTempWorkspace, SetupManager, Tool } from '@peiyanlu/test-tools'
 import { afterAll, expect, it } from 'vitest'
-import { gzipFile } from '../src/index.js'
+import { gzipFile } from '../src/gzip.js'
 
 
 const { path: TEMP_DIR } = createTempWorkspace()
