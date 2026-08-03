@@ -1,3 +1,10 @@
+## <small>[0.0.3](https://github.com/peiyanlu/node-utils/compare/v0.0.2...v0.0.3) (2026-08-03)</small>
+
+### ✨ 新功能
+
+* 增加 ETag 生成函数 ([d44e559](https://github.com/peiyanlu/node-utils/commit/d44e559480e07c75144fc77ca2693c01ab383187))
+* 增加路径和平台工具 ([8537e71](https://github.com/peiyanlu/node-utils/commit/8537e71b431f4a658d4af6e3e5aa003649759c5c))
+
 ## <small>[0.0.2](https://github.com/peiyanlu/node-utils/compare/v0.0.1...v0.0.2) (2026-07-22)</small>
 
 ### ✨ 新功能
