@@ -8,6 +8,7 @@ import {
   isSubPath,
   removeExtension,
 } from '../src/path.js'
+import { isWin } from '../src/platform.js'
 
 
 describe('normalizePath', () => {
@@ -78,7 +79,12 @@ it('hasExtension', () => {
 })
 
 it('isSamePath', () => {
-  expect(isSamePath('src/path.ts', 'src\\path.ts')).toBe(true)
+  expect(isSamePath('src/path.ts', 'src/path.ts')).toBe(true)
+  if (isWin) {
+    expect(isSamePath('src/path.ts', 'src\\path.ts')).toBe(true)
+  } else {
+    expect(isSamePath('src/path.ts', 'src\\path.ts')).toBe(false)
+  }
 })
 
 describe('isInDir', () => {
