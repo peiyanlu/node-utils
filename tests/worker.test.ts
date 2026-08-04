@@ -1,4 +1,4 @@
-import { createTempWorkspace, SetupManager, Tool } from '@peiyanlu/test-tools'
+import { Tool, useToolWithManager } from '@peiyanlu/test-tools'
 import { afterAll, expect, it } from 'vitest'
 import { runWorker } from '../src/worker.js'
 
@@ -17,39 +17,28 @@ const codeErr = [
 ].join('\n')
 
 
-const { path: TEMP_DIR } = createTempWorkspace()
-let tool: Tool
-const manager = new SetupManager()
-
-manager.setSetup([
-  () => {
-    tool = new Tool(TEMP_DIR)
-  },
-  () => {
-    tool.writeFileSync('worker.js', code)
-  },
-  () => {
-    tool.writeFileSync('worker.js', codeErr)
-  },
-])
-
-manager.setTeardown(() => {
-  tool.cleanup(true)
-})
-
-afterAll(() => {
-  tool?.cleanup()
-})
+const { manager, tool } = useToolWithManager(
+  Tool,
+  [
+    () => {
+      tool.writeFileSync('worker.js', code)
+    },
+    () => {
+      tool.writeFileSync('worker.js', codeErr)
+    },
+  ],
+  afterAll,
+)
 
 
 it('runWorker use file with success', async () => {
-  await manager.prepare(2)
+  await manager.prepare(1)
   
   expect(await runWorker(tool.resolve('worker.js'), { a: 1, b: 5 })).toBe(6)
 })
 
 it('runWorker use file with exit', async () => {
-  await manager.prepare(3)
+  await manager.prepare(2)
   
   await expect(() => runWorker(tool.resolve('worker.js'), { a: 1, b: 5 })).rejects.toThrow()
 })

@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@peiyanlu/ts-utils':
-        specifier: ^0.0.11
-        version: 0.0.11
+        specifier: latest
+        version: 0.0.12
       minimatch:
         specifier: ^10.2.6
         version: 10.2.6
@@ -22,8 +22,8 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0(conventional-commits-filter@6.0.1)
       '@peiyanlu/test-tools':
-        specifier: ^0.0.5
-        version: 0.0.5
+        specifier: ^0.0.6
+        version: 0.0.6
       '@types/node':
         specifier: ^24.13.3
         version: 24.13.3
@@ -214,8 +214,8 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
-  '@peiyanlu/test-tools@0.0.5':
-    resolution: {integrity: sha512-Q3BUqQE6wHLtF6owSlwsaG85lso83FEBIYUZGl7PEBgcNYdEFIioTQOeTD5r9gw5mMoPyh9YBItSGHJx9xzAng==}
+  '@peiyanlu/test-tools@0.0.6':
+    resolution: {integrity: sha512-HsXGBLTeWKr+EvnfD56mBfPg4aW/aBHDxt+FOna/xehpdIUXIYFMrgKD3eP6f55dj6oijcOHURBAH8vV2BU42w==}
     engines: {node: '>=22'}
 
   '@peiyanlu/ts-utils@0.0.10':
@@ -224,6 +224,10 @@ packages:
 
   '@peiyanlu/ts-utils@0.0.11':
     resolution: {integrity: sha512-0x9PC1A6ogLkPuycq9nHC2YkfKwgGLIzPIXNF7J4r67CXHS/Xj8x87X1I+i4YZhKWgdRqA+ucZwSAT4AtwZBYA==}
+    engines: {node: '>=20.0.0'}
+
+  '@peiyanlu/ts-utils@0.0.12':
+    resolution: {integrity: sha512-4J6KdTOcozak1q158GAQiV9FwtUdMPFmcGJfAkx+hS1oRl3k2hQDY4p0seLVhXWfJtPhcXbWvS7VE9uBIfWiTw==}
     engines: {node: '>=20.0.0'}
 
   '@publint/pack@0.1.6':
@@ -1449,13 +1453,15 @@ snapshots:
     transitivePeerDependencies:
       - conventional-commits-filter
 
-  '@peiyanlu/test-tools@0.0.5':
+  '@peiyanlu/test-tools@0.0.6':
     dependencies:
-      '@peiyanlu/ts-utils': 0.0.11
+      '@peiyanlu/ts-utils': 0.0.12
 
   '@peiyanlu/ts-utils@0.0.10': {}
 
   '@peiyanlu/ts-utils@0.0.11': {}
+
+  '@peiyanlu/ts-utils@0.0.12': {}
 
   '@publint/pack@0.1.6':
     dependencies:

@@ -1,4 +1,4 @@
-import { createTempWorkspace, SetupManager, Tool } from '@peiyanlu/test-tools'
+import { Tool, useToolWithManager } from '@peiyanlu/test-tools'
 import { spawn } from 'node:child_process'
 import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -21,96 +21,86 @@ vi.mock('node:child_process', () => ({
   })),
 }))
 
-
-const { path: TEMP_DIR } = createTempWorkspace()
-let tool: Tool
-const manager = new SetupManager()
-
-manager.setSetup([
-  () => {
-    tool = new Tool(TEMP_DIR)
-  },
-  () => {
-    tool.writeFileSync('a.txt', 'a')
-    tool.writeFileSync('b.txt', 'b')
-  },
-  () => {
-    tool.mkdirSync('packages')
-    tool.mkdirSync('node_modules')
-  },
-  () => {
-    tool.mkdirSync('packages/node_modules', { recursive: true })
-    tool.mkdirSync('packages/sub', { recursive: true })
-    tool.mkdirSync('packages/ignored', { recursive: true })
-    
-    tool.writeFileSync('packages/sub/a.txt', 'a')
-    tool.writeFileSync('packages/sub/b.txt', 'b')
-    tool.writeFileSync('packages/ignored/b.txt', 'b')
-    
-    tool.writeFileSync('packages/a.txt', 'a')
-    tool.writeFileSync('packages/_gitignore', 'logs/')
-    tool.writeFileSync('packages/package.json', '{"version": "1.0.0"}')
-  },
-])
-
-manager.setTeardown(() => {
-  tool?.cleanup(true)
-})
-
-afterAll(() => {
-  tool?.cleanup()
-})
+const { manager, tool, tempDir } = useToolWithManager(
+  Tool,
+  [
+    () => {
+      tool.writeFileSync('a.txt', 'a')
+      tool.writeFileSync('b.txt', 'b')
+    },
+    () => {
+      tool.mkdirSync('packages')
+      tool.mkdirSync('node_modules')
+    },
+    () => {
+      tool.mkdirSync('packages/node_modules', { recursive: true })
+      tool.mkdirSync('packages/sub', { recursive: true })
+      tool.mkdirSync('packages/ignored', { recursive: true })
+      
+      tool.writeFileSync('packages/sub/a.txt', 'a')
+      tool.writeFileSync('packages/sub/b.txt', 'b')
+      tool.writeFileSync('packages/ignored/b.txt', 'b')
+      
+      tool.writeFileSync('packages/a.txt', 'a')
+      tool.writeFileSync('packages/_gitignore', 'logs/')
+      tool.writeFileSync('packages/package.json', '{"version": "1.0.0"}')
+    },
+  ],
+  afterAll,
+)
 
 
 describe('emptyDir', () => {
   it('should returns false when directory does not exist', async () => {
     await manager.prepare(1)
-    expect(await emptyDir(join(TEMP_DIR, 'not-exist'))).toBe(false)
+    
+    expect(await emptyDir(tool.resolve('not-exist'))).toBe(false)
   })
   
   it('should removes files except ignored', async () => {
-    await manager.prepare(2)
+    await manager.prepare(1)
     
-    await emptyDir(TEMP_DIR, [ 'b.txt' ])
+    await emptyDir(tempDir, [ 'b.txt' ])
     
-    const files = await readdir(TEMP_DIR)
+    const files = await readdir(tempDir)
     expect(files).toEqual([ 'b.txt' ])
   })
 })
 
 describe('isDirEmpty', () => {
   it('should respects ignore', async () => {
-    await manager.prepare(2)
-    expect(await isDirEmpty(TEMP_DIR, [ 'a.txt', 'b.txt' ])).toBe(true)
+    await manager.prepare(1)
+    
+    expect(await isDirEmpty(tempDir, [ 'a.txt', 'b.txt' ])).toBe(true)
   })
   
   it('should returns false when non-ignored files exist', async () => {
-    await manager.prepare(2)
+    await manager.prepare(1)
     
-    expect(await isDirEmpty(TEMP_DIR, [ 'a.txt' ])).toBe(false)
+    expect(await isDirEmpty(tempDir, [ 'a.txt' ])).toBe(false)
   })
 })
 
 describe('listSubDirs', () => {
   it('should returns sub directories except ignored names', async () => {
-    await manager.prepare(3)
+    await manager.prepare(2)
     
-    expect(await listSubDirs(TEMP_DIR, [ 'node_modules' ])).toEqual([ 'packages' ])
+    expect(await listSubDirs(tempDir, [ 'node_modules' ])).toEqual([ 'packages' ])
   })
   
   it('should returns all sub directories', async () => {
-    await manager.prepare(3)
+    await manager.prepare(2)
     
-    expect(await listSubDirs(TEMP_DIR)).toEqual([ 'node_modules', 'packages' ])
+    expect(await listSubDirs(tempDir)).toEqual([ 'node_modules', 'packages' ])
   })
 })
 
 describe('copyDir', () => {
   it('should copies directory with rename & ignore rules', async () => {
-    await manager.prepare(4)
+    await manager.prepare(3)
     
-    const src = join(TEMP_DIR, 'packages')
-    const dest = join(TEMP_DIR, 'dest')
+    const src = tool.resolve('packages')
+    const dest = tool.resolve('dest')
     
     await copyDir(src, dest, {
       rename: {
@@ -131,10 +121,10 @@ describe('copyDir', () => {
   })
   
   it('should copies directory with default behavior', async () => {
-    await manager.prepare(4)
+    await manager.prepare(3)
     
-    const src = join(TEMP_DIR, 'packages')
-    const dest = join(TEMP_DIR, 'dest')
+    const src = tool.resolve('packages')
+    const dest = tool.resolve('dest')
     
     await copyDir(src, dest)
     
@@ -146,10 +136,10 @@ describe('copyDir', () => {
   })
   
   it('should copies nested directories and can ignore directories', async () => {
-    await manager.prepare(4)
+    await manager.prepare(3)
     
-    const src = join(TEMP_DIR, 'packages')
-    const dest = join(TEMP_DIR, 'dest')
+    const src = tool.resolve('packages')
+    const dest = tool.resolve('dest')
     
     await copyDir(src, dest, {
       ignore: [
@@ -163,7 +153,7 @@ describe('copyDir', () => {
 })
 
 it('isDirSync should determine whether the path is dir', async () => {
-  await manager.prepare(3)
+  await manager.prepare(2)
   
   expect(isDirSync(tool.resolve('packages'))).toBe(true)
   expect(isDirSync(tool.resolve('no-exist-packages'))).toBe(false)
@@ -171,8 +161,6 @@ it('isDirSync should determine whether the path is dir', async () => {
 })
 
 it('createTempDir should create temp dir', async () => {
-  await manager.prepare(1)
-  
   const { path, name, remove } = await createTempDir(tool.cwd)
   
   expect(name).toMatch(/temp-/)

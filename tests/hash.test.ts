@@ -1,34 +1,19 @@
-import { createTempWorkspace, SetupManager, Tool } from '@peiyanlu/test-tools'
+import { Tool, useToolWithManager } from '@peiyanlu/test-tools'
 import { type BinaryLike, createHash } from 'node:crypto'
 import { afterAll, describe, expect, it } from 'vitest'
 import { hash, hashFile } from '../src/hash.js'
 
 
-const { path: TEMP_DIR } = createTempWorkspace()
-let tool: Tool
-const manager = new SetupManager()
-
-manager.setSetup([
-  () => {
-    tool = new Tool(TEMP_DIR)
-  },
-  () => {
-    tool.writeFileSync('a.txt', 'hello')
-    tool.writeFileSync('a.json', '{"version": "1.0.1"}')
-  },
-  () => {
-    tool.mkdirSync('packages')
-    tool.mkdirSync('node_modules')
-  },
-])
-
-manager.setTeardown(() => {
-  tool?.cleanup(true)
-})
-
-afterAll(() => {
-  tool?.cleanup()
-})
+const { manager, tool } = useToolWithManager(
+  Tool,
+  [
+    () => {
+      tool.writeFileSync('a.txt', 'hello')
+      tool.writeFileSync('a.json', '{"version": "1.0.1"}')
+    },
+  ],
+  afterAll,
+)
 
 
 const sha256 = (value: BinaryLike) =>
@@ -56,7 +41,7 @@ describe('hash', () => {
 
 describe('hashFile', () => {
   it('should hash a file', async () => {
-    await manager.prepare(2)
+    await manager.prepare(1)
     
     const result = await hashFile(tool.resolve('a.txt'))
     
@@ -64,7 +49,7 @@ describe('hashFile', () => {
   })
   
   it('should support different algorithms', async () => {
-    await manager.prepare(2)
+    await manager.prepare(1)
     
     const result = await hashFile(tool.resolve('a.txt'), 'md5')
     

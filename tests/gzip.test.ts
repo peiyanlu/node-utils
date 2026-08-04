@@ -1,37 +1,22 @@
-import { createTempWorkspace, SetupManager, Tool } from '@peiyanlu/test-tools'
+import { Tool, useToolWithManager } from '@peiyanlu/test-tools'
 import { afterAll, expect, it } from 'vitest'
 import { gzipFile } from '../src/gzip.js'
 
 
-const { path: TEMP_DIR } = createTempWorkspace()
-let tool: Tool
-const manager = new SetupManager()
-
-manager.setSetup([
-  () => {
-    tool = new Tool(TEMP_DIR)
-  },
-  () => {
-    tool.writeFileSync('a.txt', 'a')
-    tool.writeFileSync('a.json', '{"version": "1.0.1"}')
-  },
-  () => {
-    tool.mkdirSync('packages')
-    tool.mkdirSync('node_modules')
-  },
-])
-
-manager.setTeardown(() => {
-  tool?.cleanup(true)
-})
-
-afterAll(() => {
-  tool?.cleanup()
-})
+const { manager, tool } = useToolWithManager(
+  Tool,
+  [
+    () => {
+      tool.writeFileSync('a.txt', 'a')
+      tool.writeFileSync('a.json', '{"version": "1.0.1"}')
+    },
+  ],
+  afterAll,
+)
 
 
 it('should create a .gz file', async () => {
-  await manager.prepare(2)
+  await manager.prepare(1)
   
   await gzipFile(tool.resolve('a.txt'))
   
@@ -39,7 +24,7 @@ it('should create a .gz file', async () => {
 })
 
 it('should throw for a non-existent file', async () => {
-  await manager.prepare(2)
+  await manager.prepare(1)
   
   await expect(gzipFile(tool.resolve('no-exist-file.txt')))
     .rejects.toMatchObject({
