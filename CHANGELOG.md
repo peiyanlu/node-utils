@@ -1,3 +1,9 @@
+## <small>[0.0.4](https://github.com/peiyanlu/node-utils/compare/v0.0.3...v0.0.4) (2026-08-07)</small>
+
+### ✨ 新功能
+
+* 增加 ETag、路径、平台和 worker 工具 ([615ff7e](https://github.com/peiyanlu/node-utils/commit/615ff7ed8b6c4bd30c52e52b848ebf594c642a0b))
+
 ## <small>[0.0.3](https://github.com/peiyanlu/node-utils/compare/v0.0.2...v0.0.3) (2026-08-03)</small>
 
 ### ✨ 新功能
