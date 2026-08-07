@@ -41,7 +41,7 @@ export const createWeakEtag = (options: WeakEtagOptions): string => {
 }
 
 /** 创建弱 ETag-基于文件特征 */
-export const createWeakFileEtag = (file: Stats | string) => {
+export const createWeakFileEtag = (file: Stats | string): string => {
   const { size, mtimeMs: mtime } = isString(file) ? statSync(file) : file
   return createWeakEtag({ size, mtime })
 }
